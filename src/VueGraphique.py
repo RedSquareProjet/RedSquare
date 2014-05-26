@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter.messagebox import *
 
 class VueGraphique():
     def __init__(self):
@@ -117,13 +118,13 @@ class VueGraphique():
         print("Position du clic -> ", X, Y)
 
         # coordonnées du carré rouge
-        xmin = self.CarreX
-        ymin = self.CarreY
-        xmax = self.CarreX + 40
-        ymax = self.CarreY + 40
-        print("Position objet -> ", xmin, ymin, xmax, ymax)
+        self.xmin = self.CarreX
+        self.ymin = self.CarreY
+        self.xmax = self.CarreX + 40
+        self.ymax = self.CarreY + 40
+        print("Position objet -> ", self.xmin, self.ymin, self.xmax, self.ymax)
 
-        if xmin <= X <= xmax and ymin <= Y <= ymax:
+        if self.xmin <= X <= self.xmax and self.ymin <= Y <= self.ymax:
             DETECTION_CLIC_SUR_CARRE_ROUGE = True
         else:
             DETECTION_CLIC_SUR_CARRE_ROUGE = False
@@ -137,10 +138,10 @@ class VueGraphique():
 
         if DETECTION_CLIC_SUR_CARRE_ROUGE:
             # limite de la zone du déplacement du carré
-            if X < 50 : X = 50
-            if X > 460 : X = 460
-            if Y < 50 : Y = 50
-            if Y > 460 : Y = 460
+            if X < 70 : X = 70
+            if X > 480 : X = 480
+            if Y < 70 : Y = 70
+            if Y > 480 : Y = 480
             self.CarreX = X
             self.CarreY = Y
 
@@ -149,13 +150,47 @@ class VueGraphique():
             self.canevas.delete(self.Rec2)
             self.canevas.delete(self.Rec3)
             self.canevas.delete(self.Rec4)
-            self.afficherPartie(self.CarreX, self.CarreY, 100, 100, 300, 85, 85, 350, 355, 340)
+            self.afficherPartie(self.CarreX - 20, self.CarreY - 20, 100, 100, 300, 85, 85, 350, 355, 340)
+
+    ############################# Custom Dialogue Box Fin Partie #####################################
+    def afficherFenetreFinPartie(self, temps):
+        temps =  str(temps)
+        reponse = askyesno("Game Over", "La police vous a massacrée. Vous avez survécu " + temps +"." "\nVoulez-vous sauvgardez votre score?")
+        if reponse > 0:
+            self.fenetreJeu.grid_forget()
+            self.fenetreSauvgarder()
+        else:
+            self.fenetreJeu.grid_forget()
+            self.afficherMenu()
+
+    def bouton_OK(self):
+        self.fenetreSauvgarde.grid_forget()
+        # connxin avec le controleur
+        self.afficherMenu()
+
+    def fenetreSauvgarder(self):
+        self.master.title("Red Squar - Sauvgarder Partie")
+        self.fenetreSauvgarde = Frame(self.master)
+        self.fenetreSauvgarde.grid()
+
+        self.canevas = Canvas(self.fenetreSauvgarde, width= 550, height= 550, bg= "gray10", bd= -2)
+        self.canevas.grid()
+
+        self.imgEntrerNom = PhotoImage(file= "images/EntrerNomImage.gif")
+        self.canevas.create_image(10, 220, image =  self.imgEntrerNom, anchor = NW)
+
+        self.var_nom = StringVar()
+        self.champNom = Entry(self.fenetreSauvgarde, textvariable= self.var_nom, width= 30)
+        self.canevas.create_window(290, 260, anchor= 'nw', window= self.champNom)
+
+        bouton_OK = Button(self.fenetreSauvgarde, text= "OK", bg="red", fg="white", width= 30, height= 2, command= self.bouton_OK)
+        self.canevas.create_window(165, 315, anchor='nw', window= bouton_OK)
 
     #################################################################################################
     #                                      Fenêtre Pointages                                        #
     #################################################################################################
 
-     ################## Définition de fonctionnement ddubouton pour le menu score ###################
+    ################## Définition de fonctionnement ddubouton pour le menu score ###################
     def bouton_RetournerMenu(self):
         self.fenetrePointages.grid_forget()
         self.afficherMenu()
